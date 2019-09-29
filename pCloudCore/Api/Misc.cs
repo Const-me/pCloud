@@ -6,7 +6,7 @@ namespace PCloud
 	/// <summary>Miscellaneous RPCs</summary>
 	public static class Misc
 	{
-		/// <summary>Return value of <see cref="Misc.getIp(Connection)" /> RPC, contains IP address and country code.</summary>
+		/// <summary>IP address and country code.</summary>
 		public struct ClientIP
 		{
 			/// <summary>Remote address of the user that is connecting to the API.</summary>

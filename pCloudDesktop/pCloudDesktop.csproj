@@ -89,11 +89,11 @@
     <Compile Include="..\pCloudCore\Protocol\RequestExt.cs">
       <Link>Protocol\RequestExt.cs</Link>
     </Compile>
+    <Compile Include="..\pCloudCore\Protocol\Response.cs">
+      <Link>Protocol\Response.cs</Link>
+    </Compile>
     <Compile Include="..\pCloudCore\Protocol\ResponseParser.cs">
       <Link>Protocol\ResponseParser.cs</Link>
-    </Compile>
-    <Compile Include="..\pCloudCore\Response.cs">
-      <Link>Response.cs</Link>
     </Compile>
     <Compile Include="..\pCloudCore\Utils\ErrorCodes.cs">
       <Link>Utils\ErrorCodes.cs</Link>

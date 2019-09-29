@@ -134,7 +134,7 @@ namespace PCloud
 				flushedStream = true;
 			}
 			// Unwrap exactly one level of Task<> to limit count of in-flight requests.
-			// Also, if the post() method goonna sleep on the throttle semaphore, flush the socket, unless flushed above
+			// Also, if the post() method gonna sleep on the throttle semaphore, flush the socket, unless already flushed above.
 			bool wasThrottled;
 			var tt = receiveQueue.post( fnReceive, out wasThrottled );
 			if( wasThrottled && !flushedStream )
@@ -178,7 +178,7 @@ namespace PCloud
 				if( length < 0 )
 					await source.CopyToAsync( stream );
 				else
-					await Utils.copyData( source, stream, length, 256 * 1024 );
+					await Utils.copyData( source, stream, length );
 				tResult = await sendImpl( fnReceiveSimple );
 			}
 			catch( Exception ex )
@@ -199,11 +199,11 @@ namespace PCloud
 			Func<Task<Response>> fnReceiveResult = async () =>
 			{
 				var resp = await receiveSimple();
-				if( resp.payload.isEmpty())
+				if( resp.payload.isEmpty() )
 					throw new ApplicationException( $"Connection.download: expected { length } bytes, got no payload" );
-				var data = resp.payload[ 0 ];
-				if( data.payloadLength != length )
-					throw new ApplicationException( $"Connection.download: expected { length } bytes, got { data.payloadLength } in the response" );
+				long payloadBytes = resp.payload.Sum( d => d.payloadLength );
+				if( payloadBytes != length )
+					throw new ApplicationException( $"Connection.download: expected { length } bytes, got { payloadBytes } in the response" );
 				await stream.copyData( dest, length );
 				return resp;
 			};

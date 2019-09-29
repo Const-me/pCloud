@@ -10,7 +10,7 @@ namespace PCloud
 	{
 		/// <summary>Flags for <see cref="createFileImpl(Connection, object, eFileOpenFlags)" /> RPC.</summary>
 		[Flags]
-		public enum eFileOpenFlags: ushort
+		enum eFileOpenFlags: ushort
 		{
 			None = 0,
 			O_WRITE = 0x0002,
