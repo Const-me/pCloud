@@ -242,6 +242,8 @@ namespace PCloud
 		{
 			var req = conn.newRequest( "deletefile" );
 			req.add( "fileid", fi.id );
+			req.unixTimestamps();
+
 			return conn.send( req );
 		}
 
@@ -251,6 +253,7 @@ namespace PCloud
 			var req = conn.newRequest( "stat" );
 			req.add( "fileid", id );
 			req.unixTimestamps();
+
 			var response = await conn.send( req );
 			return new Metadata.FileInfo( response.metadata() );
 		}
