@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\pCloud.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -53,14 +54,14 @@
     <Compile Include="..\pCloudCore\Api\FolderOperations.cs">
       <Link>Api\FolderOperations.cs</Link>
     </Compile>
-    <Compile Include="..\pCloudCore\Api\Links.cs">
-      <Link>Api\Links.cs</Link>
-    </Compile>
     <Compile Include="..\pCloudCore\Api\ListFolder.cs">
       <Link>Api\ListFolder.cs</Link>
     </Compile>
     <Compile Include="..\pCloudCore\Api\Misc.cs">
       <Link>Api\Misc.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Api\UploadLink.cs">
+      <Link>Api\UploadLink.cs</Link>
     </Compile>
     <Compile Include="..\pCloudCore\Connection.cs">
       <Link>Connection.cs</Link>

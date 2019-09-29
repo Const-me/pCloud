@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace PCloud
 {
 	/// <summary>Public link RPCs</summary>
-	public static class Links
+	public static class UploadLink
 	{
 		/// <summary>Anonymously upload file to an upload link.</summary>
 		/// <remarks>
