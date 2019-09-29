@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+	<metadata minClientVersion="3.4.4">
+		<id>pCloud</id>
+		<version>1.0.0</version>
+		<authors>const.me</authors>
+		<owners>const.me</owners>
+		<summary>Unofficial SDK for https://pcloud.com/ cloud storage</summary>
+		<description>
+			A straightforward implementation of the API documented at https://docs.pcloud.com/ The library consumes binary protocol, because I don’t like neither JSON nor HTTP too much. SSL traffic encryption is supported.
+			The APIs uses async-await heavily. You can send multiple requests over the same connection, they will be pipelined i.e. the client will send several requests, then start waiting for their responses. The maximum in-flight requests count is limited to 8. The public API is thread safe.
+			Before using the library, please set Authentication.deviceInfoString public field to the name of your app. The default is ".NET Core", not too descriptive.
+			The library doesn’t support 100% of the API, only a subset of it: login/logout, directory operations like create/rename/move/list, file operations like create/read/write/delete, upload links, and a few more requests. Feel free to fork and implement whatever extra you need.
+		</description>
+		<copyright>Copyright © const.me, 2019</copyright>
+		<title>Unofficial SDK for https://pcloud.com/ cloud storage</title>
+		<projectUrl>https://github.com/Const-me/pCloud</projectUrl>
+		<repository type="git" url="https://github.com/Const-me/pCloud.git" />
+		<license type="expression">MIT</license>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<dependencies>
+			<group targetFramework=".NETCoreApp2.2" />
+			<group targetFramework="net47">
+				<dependency id="System.Buffers" version="4.5.0" />
+			</group>
+		</dependencies>
+		<references>
+			<reference file="pCloud.dll" />
+		</references>
+		<tags>cloud</tags>
+	</metadata>
+	<files>
+		<!-- .NET Core 2.2 -->
+		<file src="bin\Release\netcoreapp2.2\pCloud.dll" target="lib\netcoreapp2.2" />
+		<file src="bin\Release\netcoreapp2.2\pCloud.pdb" target="lib\netcoreapp2.2" />
+		<file src="bin\Release\netcoreapp2.2\pCloud.xml" target="lib\netcoreapp2.2" />
+
+		<!-- .NET Framework 4.7.0 -->
+		<file src="..\pCloudDesktop\bin\Release\pCloud.dll" target="lib\net47" />
+		<file src="..\pCloudDesktop\bin\Release\pCloud.pdb" target="lib\net47" />
+		<file src="..\pCloudDesktop\bin\Release\pCloud.xml" target="lib\net47" />
+
+	</files>
+</package>

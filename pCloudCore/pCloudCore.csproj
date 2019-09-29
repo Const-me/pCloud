@@ -4,6 +4,9 @@
 		<AssemblyName>pCloud</AssemblyName>
 		<RootNamespace>PCloud</RootNamespace>
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<PackageId>pCloud</PackageId>
+		<NuspecFile>pCloud.nuspec</NuspecFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>

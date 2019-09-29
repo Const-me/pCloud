@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28307.852
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pCloudCore", "pCloudCore\pCloudCore.csproj", "{8B344AA5-554B-4E8F-B198-53AFB5A82935}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3D888445-F8C0-4876-B594-6B6E51315489} = {3D888445-F8C0-4876-B594-6B6E51315489}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestCore", "TestCore\TestCore.csproj", "{47316B40-22D5-4046-96B7-E98D61CD0190}"
 EndProject
