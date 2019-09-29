@@ -228,6 +228,7 @@ namespace PCloud
 				req.add( "nopartial", true );
 			if( renameIfExists )
 				req.add( "renameifexists", true );
+			req.unixTimestamps();
 
 			var response = await conn.upload( req, sourceStream );
 			return new Metadata.FileInfo( response.metadata() );
@@ -249,6 +250,7 @@ namespace PCloud
 		{
 			var req = conn.newRequest( "stat" );
 			req.add( "fileid", id );
+			req.unixTimestamps();
 			var response = await conn.send( req );
 			return new Metadata.FileInfo( response.metadata() );
 		}

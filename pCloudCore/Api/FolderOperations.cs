@@ -15,6 +15,8 @@ namespace PCloud
 			RequestBuilder req = conn.newRequest( getExisting ? "createfolderifnotexists" : "createfolder" );
 			req.add( "folderid", parent?.id ?? 0L );
 			req.add( "name", name );
+			req.unixTimestamps();
+
 			var response = await conn.send( req );
 			return new Metadata.FolderInfo( response.metadata() );
 		}
@@ -26,6 +28,8 @@ namespace PCloud
 				throw new ArgumentException( "The root folder can't be deleted" );
 			RequestBuilder req = conn.newRequest( recursively ? "deletefolderrecursive" : "deletefolder" );
 			req.add( "folderid", folder.id );
+			req.unixTimestamps();
+
 			return conn.send( req );
 		}
 
@@ -44,6 +48,7 @@ namespace PCloud
 				req.add( "toname", newName );
 			if( null != newParent )
 				req.add( "tofolderid", newParent.id );
+			req.unixTimestamps();
 
 			var response = await conn.send( req );
 			return new Metadata.FolderInfo( response.metadata() );

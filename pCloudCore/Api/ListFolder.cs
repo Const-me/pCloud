@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,8 +14,7 @@ namespace PCloud
 			req.add( "folderid", id );
 			req.add( "recursive", recursive );
 			req.add( "nofiles", noFiles );
-			// Ask server for UTC unix timestamps. This library only supports that format, much cheaper to parse than strings, the server doesn't send milliseconds anyway.
-			req.add( "timeformat", "timestamp" );
+			req.unixTimestamps();
 			var response = await conn.send( req );
 
 			var meta = response.dict[ "metadata" ] as IReadOnlyDictionary<string, object>;

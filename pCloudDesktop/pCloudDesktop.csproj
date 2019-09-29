@@ -86,6 +86,9 @@
     <Compile Include="..\pCloudCore\Protocol\RequestBuilder.cs">
       <Link>Protocol\RequestBuilder.cs</Link>
     </Compile>
+    <Compile Include="..\pCloudCore\Protocol\RequestExt.cs">
+      <Link>Protocol\RequestExt.cs</Link>
+    </Compile>
     <Compile Include="..\pCloudCore\Protocol\ResponseParser.cs">
       <Link>Protocol\ResponseParser.cs</Link>
     </Compile>
