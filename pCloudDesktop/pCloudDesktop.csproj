@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3D888445-F8C0-4876-B594-6B6E51315489}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PCloud</RootNamespace>
+    <AssemblyName>pCloud</AssemblyName>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\pCloudCore\Api\Authentication.cs">
+      <Link>Api\Authentication.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Api\FileOperations.cs">
+      <Link>Api\FileOperations.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Api\FolderOperations.cs">
+      <Link>Api\FolderOperations.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Api\Links.cs">
+      <Link>Api\Links.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Api\ListFolder.cs">
+      <Link>Api\ListFolder.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Api\Misc.cs">
+      <Link>Api\Misc.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Connection.cs">
+      <Link>Connection.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Endpoint.cs">
+      <Link>Endpoint.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Metadata\eCategory.cs">
+      <Link>Metadata\eCategory.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Metadata\eIcon.cs">
+      <Link>Metadata\eIcon.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Metadata\FileInfo.cs">
+      <Link>Metadata\FileInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Properties\AssemblyInfo.cs">
+      <Link>Properties\AssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Protocol\JSON.cs">
+      <Link>Protocol\JSON.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Protocol\RequestBuilder.cs">
+      <Link>Protocol\RequestBuilder.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Protocol\ResponseParser.cs">
+      <Link>Protocol\ResponseParser.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Response.cs">
+      <Link>Response.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Utils\ErrorCodes.cs">
+      <Link>Utils\ErrorCodes.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Utils\TaskQueue.cs">
+      <Link>Utils\TaskQueue.cs</Link>
+    </Compile>
+    <Compile Include="..\pCloudCore\Utils\Utils.cs">
+      <Link>Utils\Utils.cs</Link>
+    </Compile>
+    <Compile Include="Utils\DesktopCompat.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
