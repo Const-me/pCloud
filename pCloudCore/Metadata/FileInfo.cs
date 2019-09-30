@@ -38,7 +38,7 @@ namespace PCloud.Metadata
 			category = (eCategory)dict.getInt( "category", (int)eCategory.Uncategorized );
 		}
 
-		public static FileBase create( IReadOnlyDictionary<string, object> dict )
+		internal static FileBase create( IReadOnlyDictionary<string, object> dict )
 		{
 			bool folder = (bool)dict[ "isfolder" ];
 			if( folder )
@@ -46,7 +46,7 @@ namespace PCloud.Metadata
 			return new FileInfo( dict );
 		}
 
-		public static FileBase[] createAll( IReadOnlyDictionary<string, object> dict )
+		internal static FileBase[] createAll( IReadOnlyDictionary<string, object> dict )
 		{
 			if( dict.lookup( "contents" ) is object[] contents )
 				return contents.OfType<IReadOnlyDictionary<string, object>>().Select( FileBase.create ).ToArray();
@@ -57,6 +57,7 @@ namespace PCloud.Metadata
 	/// <summary>Folder metadata, can have children inside.</summary>
 	public sealed class FolderInfo: FileBase
 	{
+		/// <summary>Contained subfolders and files. Can be null.</summary>
 		public readonly FileBase[] children = null;
 
 		internal FolderInfo( IReadOnlyDictionary<string, object> dict ) : base( true, dict )
@@ -64,6 +65,7 @@ namespace PCloud.Metadata
 			children = createAll( dict );
 		}
 
+		/// <summary>Returns a string that represents the current object.</summary>
 		public override string ToString()
 		{
 			int subfolders = 0;
@@ -96,6 +98,7 @@ namespace PCloud.Metadata
 			hash = Convert.ToUInt64( dict[ "hash" ] );
 		}
 
+		/// <summary>Returns a string that represents the current object.</summary>
 		public override string ToString()
 		{
 			return $"\"{ name }\", { length } bytes";

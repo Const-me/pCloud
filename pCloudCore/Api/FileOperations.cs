@@ -59,7 +59,9 @@ namespace PCloud
 		/// <summary>File descriptor and ID.</summary>
 		public struct FileDescriptor
 		{
+			/// <summary>File descriptor, they are small positive numbers, incremented by 1 as you open more files within the session</summary>
 			public readonly int fd;
+			/// <summary>File ID, very large integer > 4G, persistent across connections and sessions.</summary>
 			public readonly long fileId;
 			internal FileDescriptor( IReadOnlyDictionary<string, object> dict )
 			{
@@ -70,6 +72,7 @@ namespace PCloud
 			/// <summary>Implicitly convert to int to pass this structure into readFile and friends</summary>
 			public static implicit operator int( FileDescriptor f ) => f.fd;
 
+			/// <summary>Returns a string that represents the current object.</summary>
 			public override string ToString()
 			{
 				return $"descriptor { fd }, ID { fileId.ToString( "x" ) }";
@@ -203,6 +206,7 @@ namespace PCloud
 				length = dict.getLong( "size" );
 			}
 
+			/// <summary>Returns a string that represents the current object.</summary>
 			public override string ToString()
 			{
 				return $"{ length } bytes, sha1 { Utils.hexString( sha1 ) }, md5 { Utils.hexString( md5 ) }";
@@ -235,6 +239,7 @@ namespace PCloud
 				position = dict.getLong( "offset" );
 			}
 
+			/// <summary>Returns a string that represents the current object.</summary>
 			public override string ToString()
 			{
 				return $"length { length }, position { position }";
