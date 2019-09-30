@@ -100,11 +100,17 @@ namespace PCloud
 			return conn.createFileImpl( path, flags );
 		}
 
+		/// <summary>Open an existing file specified by file ID</summary>
+		public static Task<FileDescriptor> createFile( this Connection conn, long fileId, FileMode mode, FileAccess access )
+		{
+			eFileOpenFlags flags = openFlags( mode, access );
+			return conn.createFileImpl( fileId, flags );
+		}
+
 		/// <summary>Open an existing file</summary>
 		public static Task<FileDescriptor> createFile( this Connection conn, Metadata.FileInfo fi, FileMode mode, FileAccess access )
 		{
-			eFileOpenFlags flags = openFlags( mode, access );
-			return conn.createFileImpl( fi.id, flags );
+			return conn.createFile( fi.id, mode, access );
 		}
 
 		/// <summary>Open a file in the specified folder</summary>
@@ -329,6 +335,16 @@ namespace PCloud
 		{
 			var req = conn.newRequest( "deletefile" );
 			req.add( "fileid", fi.id );
+			req.unixTimestamps();
+
+			return conn.send( req );
+		}
+
+		/// <summary>Delete a file</summary>
+		public static Task deleteFile( this Connection conn, long fileId )
+		{
+			var req = conn.newRequest( "deletefile" );
+			req.add( "fileid", fileId );
 			req.unixTimestamps();
 
 			return conn.send( req );

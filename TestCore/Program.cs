@@ -3,6 +3,7 @@ using PCloud.Metadata;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace TestCore
@@ -41,10 +42,10 @@ namespace TestCore
 					// Test multiplexed access: list subfolders in parallel
 					var subfolders = fi.children.OfType<FolderInfo>().ToArray();
 
-					// Start them from the current thread
+					// Start list operations from the current thread
 					// var tasks = subfolders.Select( f => conn.getFiles( f ) ).ToArray();
 
-					// Start them from different threads of the thread pool
+					// Start list operations from different threads / each, of the thread pool.
 					var tasks = subfolders.Select( f => Task.Run( () => conn.getFiles( f ) ) ).ToArray();
 
 					await Task.WhenAll( tasks );
@@ -79,12 +80,68 @@ namespace TestCore
 			}
 		}
 
+		static async Task testFoldersAndFiles()
+		{
+			using( var conn = await Connection.open( ssl ) )
+			{
+				await conn.login( accountMail, accountPassword );
+				Console.WriteLine( "Login OK" );
+
+				try
+				{
+					var dir = await conn.createFolder( "NetCoreTest" );
+					Console.WriteLine( "Created folder: {0}", dir );
+
+					dir = await conn.renameFolder( dir, "OtherName" );
+					Console.WriteLine( "Renamed folder: {0}", dir );
+
+					var fd = await conn.createFile( dir, "test.txt", FileMode.Create, FileAccess.Write );
+					Console.WriteLine( "Opened a file: {0}", fd );
+
+					string sourceString = "Hello, world";
+					MemoryStream ms = new MemoryStream( Encoding.UTF8.GetBytes( sourceString ), false );
+					await conn.writeFile( fd, ms, ms.Length );
+					Console.WriteLine( "Wrote the file" );
+					await conn.closeFile( fd );
+					Console.WriteLine( "Closed the file" );
+
+					fd = await conn.createFile( fd.fileId, FileMode.Open, FileAccess.Read );
+					Console.WriteLine( "Opened the file for reading: {0}", fd );
+					var fileSize = await conn.getFileSize( fd );
+					Console.WriteLine( "Got the file size: {0}", fileSize );
+					MemoryStream msRead = new MemoryStream();
+					await conn.readFile( fd, msRead, fileSize.length );
+					Console.WriteLine( "Read file: \"{0}\"", Encoding.UTF8.GetString( msRead.ToArray() ) );
+					await conn.closeFile( fd );
+					Console.WriteLine( "Closed the file" );
+
+					dir = await conn.listFolder( dir.id );
+					Console.WriteLine( "Refreshed the folder: {0}", dir );
+
+					await conn.deleteFile( fd.fileId );
+					Console.WriteLine( "Deleted the file" );
+
+					dir = await conn.listFolder( dir.id );
+					Console.WriteLine( "Refreshed the folder: {0}", dir );
+
+					await conn.deleteFolder( dir );
+					Console.WriteLine( "Deleted the folder" );
+				}
+				finally
+				{
+					await logout( conn );
+				}
+			}
+		}
+
 		static async Task Main( string[] args )
 		{
 			try
 			{
 				// await testPublicUpload();
-				await testDownloads();
+				// await testDownloads();
+				// await testListFolder();
+				await testFoldersAndFiles();
 			}
 			catch( Exception ex )
 			{
