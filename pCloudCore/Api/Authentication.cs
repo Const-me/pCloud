@@ -1,13 +1,24 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace PCloud
 {
 	/// <summary>RPCs related to authentication</summary>
 	public static class Authentication
 	{
+		static Authentication()
+		{
+			Assembly ass = Assembly.GetEntryAssembly();
+			var apa = ass.GetCustomAttribute<AssemblyProductAttribute>();
+			if( null != apa )
+				deviceInfoString = $"{ apa.Product }, { ass.GetName().Version }";
+			else
+				deviceInfoString = ass.FullName;
+		}
+
 		/// <summary>Apparently, their web interface shows that data for live sessions. Good idea to set into something more descriptive before using the library.</summary>
-		public static string deviceInfoString = ".NET Core";
+		public static string deviceInfoString;
 
 		static async Task<string> getDigest( this Connection conn )
 		{
