@@ -1,0 +1,1 @@
+This project is not actively maintained.The repository contains unofficial .NET implementation of the pCloud storage, https://pcloud.com/
