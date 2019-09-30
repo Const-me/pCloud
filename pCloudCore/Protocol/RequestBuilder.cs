@@ -35,7 +35,7 @@ namespace PCloud
 			header[ 2 ] = (byte)methodBytesCount;
 			if( payloadLength.HasValue )
 				header[ 2 ] |= 0x80;
-			// The first 2 bytes are garbage, ArrayPool doesn't zero initialize, but that's OK, close() method overwrites then anyway.
+			// The first 2 bytes are garbage, ArrayPool doesn't zero initialize, but that's OK, close() method below overwrites them anyway.
 			buffer.write( header, 3 );
 			Utils.bufferReturn( header );
 
