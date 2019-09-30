@@ -112,6 +112,10 @@ namespace TestCore
 					MemoryStream msRead = new MemoryStream();
 					await conn.readFile( fd, msRead, fileSize.length );
 					Console.WriteLine( "Read file: \"{0}\"", Encoding.UTF8.GetString( msRead.ToArray() ) );
+
+					var checksum = await conn.checksumFileSlice( fd, 0, fileSize.length );
+					Console.WriteLine( "checksumFileSlice: {0}", checksum );
+
 					await conn.closeFile( fd );
 					Console.WriteLine( "Closed the file" );
 
