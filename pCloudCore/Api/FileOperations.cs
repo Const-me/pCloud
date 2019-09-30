@@ -66,6 +66,14 @@ namespace PCloud
 				fd = dict.getInt( "fd" );
 				fileId = dict.getLong( "fileid" );
 			}
+
+			/// <summary>Implicitly convert to int to pass this structure into readFile and friends</summary>
+			public static implicit operator int( FileDescriptor f ) => f.fd;
+
+			public override string ToString()
+			{
+				return $"descriptor { fd }, ID { fileId.ToString( "x" ) }";
+			}
 		}
 
 		/// <summary>Open file, return the descriptor</summary>
@@ -118,15 +126,92 @@ namespace PCloud
 			return conn.send( req );
 		}
 
-		/// <summary>Read a file</summary>
-		public static Task readFile( this Connection conn, int fd, byte[] buffer, int count )
+		/// <summary>Read into a stream. If you need data in a byte array, wrap the array into a <see cref="MemoryStream" />.</summary>
+		public static Task readFile( this Connection conn, int fd, Stream dest, long count )
 		{
 			RequestBuilder req = conn.newRequest( "file_read" );
 			req.add( "fd", fd );
 			req.add( "count", count );
+			return conn.download( req, dest, count );
+		}
 
-			MemoryStream ms = new MemoryStream( buffer, 0, count, true );
-			return conn.download( req, ms, count );
+		/// <summary>Write file by copying specified count of bytes from the stream.</summary>
+		public static async Task<long> writeFile( this Connection conn, int fd, Stream source, long count )
+		{
+			RequestBuilder req = conn.newRequest( "file_write", count );
+			req.add( "fd", fd );
+			var response = await conn.upload( req, source, count );
+			return response.dict.getLong( "bytes" );
+		}
+
+		/// <summary>Set the current offset of the file descriptor to offset bytes.</summary>
+		public static async Task<long> seekFile( this Connection conn, int fd, long offset, SeekOrigin origin = SeekOrigin.Begin )
+		{
+			RequestBuilder req = conn.newRequest( "file_seek" );
+			req.add( "fd", fd );
+			req.add( "offset", offset );
+			switch( origin )
+			{
+				case SeekOrigin.Begin:
+					break;
+				case SeekOrigin.Current:
+					req.add( "whence", 1 );
+					break;
+				case SeekOrigin.End:
+					req.add( "whence", 2 );
+					break;
+				default:
+					throw new ArgumentException( "Invalid seek origin", "seekOrigin" );
+			}
+			var response = await conn.send( req );
+			return response.dict.getLong( "offset" );
+		}
+
+		/// <summary>Set file size in bytes.</summary>
+		/// <remarks>
+		/// <para>If length is less than the file size, then the extra data is cut from the file, else the the file contents are extended with zeros as needed.</para>
+		/// <para>The current offset is not modified.</para>
+		/// </remarks>
+		public static Task resizeFile( this Connection conn, int fd, long newLength )
+		{
+			RequestBuilder req = conn.newRequest( "file_truncate" );
+			req.add( "fd", fd );
+			req.add( "length", newLength );
+			return conn.send( req );
+		}
+
+		/// <summary>MD5 and SHA1 checksums of the piece of the file</summary>
+		public struct SliceChecksums
+		{
+			/// <summary>SHA-1 checksum</summary>
+			public readonly byte[] sha1;
+			/// <summary>MD5 checksum</summary>
+			public readonly byte[] md5;
+			/// <summary>Count of bytes for which the checksums were computed</summary>
+			public readonly long length;
+
+			internal SliceChecksums( IReadOnlyDictionary<string, object> dict )
+			{
+				sha1 = Utils.bytesFromHex( (string)dict[ "sha1" ] );
+				md5 = Utils.bytesFromHex( (string)dict[ "md5" ] );
+				length = dict.getLong( "size" );
+			}
+
+			public override string ToString()
+			{
+				return $"{ length } bytes, sha1 { Utils.hexString( sha1 ) }, md5 { Utils.hexString( md5 ) }";
+			}
+		}
+
+		/// <summary>Compute MD5 and SHA1 checksums of a slice of the file</summary>
+		public static async Task<SliceChecksums> checksumFileSlice( this Connection conn, int fd, long sliceStart, long sliceLength )
+		{
+			RequestBuilder req = conn.newRequest( "file_checksum" );
+			req.add( "fd", fd );
+			req.add( "count", sliceLength );
+			req.add( "offset", sliceStart );
+			var response = await conn.send( req );
+			return new SliceChecksums( response.dict );
 		}
 
 		/// <summary>File size and position</summary>
@@ -142,6 +227,11 @@ namespace PCloud
 			{
 				length = dict.getLong( "size" );
 				position = dict.getLong( "offset" );
+			}
+
+			public override string ToString()
+			{
+				return $"length { length }, position { position }";
 			}
 		}
 
@@ -212,7 +302,7 @@ namespace PCloud
 		}
 
 		/// <summary>"metadata" property of the response</summary>
-		internal static IReadOnlyDictionary<string, object> metadata(this Response response)
+		internal static IReadOnlyDictionary<string, object> metadata( this Response response )
 		{
 			return (IReadOnlyDictionary<string, object>)response.dict[ "metadata" ];
 		}
@@ -235,9 +325,6 @@ namespace PCloud
 		}
 
 		/// <summary>Delete a file</summary>
-		/// <param name="conn"></param>
-		/// <param name="fi"></param>
-		/// <returns></returns>
 		public static Task deleteFile( this Connection conn, Metadata.FileInfo fi )
 		{
 			var req = conn.newRequest( "deletefile" );

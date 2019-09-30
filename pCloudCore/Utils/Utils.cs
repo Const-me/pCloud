@@ -74,6 +74,33 @@ namespace PCloud
 			}
 		}
 
+		// https://stackoverflow.com/a/24343727/126995
+		static readonly uint[] s_hexStringLookup = createStringLookup();
+
+		private static uint[] createStringLookup()
+		{
+			var result = new uint[ 256 ];
+			for( int i = 0; i < 256; i++ )
+			{
+				string s = i.ToString( "x2" );
+				result[ i ] = ( (uint)s[ 0 ] ) | ( (uint)s[ 1 ] << 16 );
+			}
+			return result;
+		}
+
+		public static string hexString( byte[] bytes )
+		{
+			uint[] lookup32 = s_hexStringLookup;
+			char[] result = new char[ bytes.Length * 2 ];
+			for( int i = 0; i < bytes.Length; i++ )
+			{
+				uint val = lookup32[ bytes[ i ] ];
+				result[ 2 * i ] = (char)val;
+				result[ 2 * i + 1 ] = (char)( val >> 16 );
+			}
+			return new string( result );
+		}
+
 		/// <summary>Compute SHA1 of UTF8 bytes of the input string, convert result to lowercase hexadecimal string without delimiters between bytes</summary>
 		public static string sha1( string input )
 		{
@@ -81,11 +108,21 @@ namespace PCloud
 			{
 				// Not using ArrayPool here, login is not performance critical but it is security critical.
 				var hash = sha1.ComputeHash( Encoding.UTF8.GetBytes( input ) );
-				var sb = new StringBuilder( hash.Length * 2 );
-				foreach( byte b in hash )
-					sb.Append( b.ToString( "x2" ) );
-				return sb.ToString();
+				return hexString( hash );
 			}
+		}
+
+		static readonly int[] hexValueLookup = new int[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+			0x06, 0x07, 0x08, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+			0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F };
+
+		public static byte[] bytesFromHex( string Hex )
+		{
+			// https://stackoverflow.com/a/5919521/126995
+			byte[] Bytes = new byte[ Hex.Length / 2 ];
+			for( int x = 0, i = 0; i < Hex.Length; i += 2, x += 1 )
+				Bytes[ x ] = (byte)( hexValueLookup[ char.ToUpper( Hex[ i + 0 ] ) - '0' ] << 4 | hexValueLookup[ char.ToUpper( Hex[ i + 1 ] ) - '0' ] );
+			return Bytes;
 		}
 
 		/// <summary>Similar to Stream.CopyToAsync, but copies exactly specified count of bytes. Throws EndOfStreamException when the source doesn't have enough bytes.</summary>
