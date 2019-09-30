@@ -26,6 +26,7 @@ namespace PCloud
 		/// <summary>Cache the delegate for the most common response handling. It's used by all requests except download ones, no need to produce unneeded garbage.</summary>
 		readonly Func<Task<Response>> fnReceiveSimple;
 
+		/// <summary>Host name of the server</summary>
 		public readonly string serverDnsName;
 
 		/// <summary>True if this connection is encrypted.</summary>
