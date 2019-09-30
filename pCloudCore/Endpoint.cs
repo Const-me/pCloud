@@ -9,16 +9,16 @@ namespace PCloud
 	/// <summary>Connect to the server, optionally setting up SSL traffic encryption</summary>
 	static class Endpoint
 	{
-		const string host = "api.pcloud.com";
+		public const string host = "api.pcloud.com";
 		const int port = 8398;
 		const int portSsl = 8399;
 
-		static async Task<Stream> connectTcp( int tcpPortNumber )
+		static async Task<Stream> connectTcp( string hostDnsName, int tcpPortNumber )
 		{
 			TcpClient client = new TcpClient();
 			try
 			{
-				await client.ConnectAsync( host, tcpPortNumber );
+				await client.ConnectAsync( hostDnsName, tcpPortNumber );
 				return client.GetStream();
 			}
 			catch( Exception )
@@ -28,9 +28,9 @@ namespace PCloud
 			}
 		}
 
-		static async Task<Stream> connectSsl()
+		static async Task<Stream> connectSsl( string hostDnsName )
 		{
-			Stream tcp = await connectTcp( portSsl );
+			Stream tcp = await connectTcp( hostDnsName, portSsl );
 			SslStream sslStream = new SslStream( tcp, false );
 			try
 			{
@@ -44,10 +44,10 @@ namespace PCloud
 			}
 		}
 
-		/// <summary>Establish connection to a pCloud server</summary>
-		public static Task<Stream> connect( bool encryptTraffic )
+		/// <summary>Establish connection to a pCloud server.</summary>
+		public static Task<Stream> connect( bool encryptTraffic, string hostDnsName = host )
 		{
-			return encryptTraffic ? connectSsl() : connectTcp( port );
+			return encryptTraffic ? connectSsl( hostDnsName ) : connectTcp( hostDnsName, port );
 		}
 	}
 }

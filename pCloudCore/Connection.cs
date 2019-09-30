@@ -26,12 +26,15 @@ namespace PCloud
 		/// <summary>Cache the delegate for the most common response handling. It's used by all requests except download ones, no need to produce unneeded garbage.</summary>
 		readonly Func<Task<Response>> fnReceiveSimple;
 
+		public readonly string serverDnsName;
+
 		/// <summary>True if this connection is encrypted.</summary>
 		public readonly bool isEncrypted;
 
-		Connection( Stream stream, bool isEncrypted )
+		Connection( Stream stream, string serverDnsName, bool isEncrypted )
 		{
 			this.stream = stream;
+			this.serverDnsName = serverDnsName;
 			this.isEncrypted = isEncrypted;
 			fnReceiveSimple = receiveSimple;
 		}
@@ -45,10 +48,43 @@ namespace PCloud
 		/// <summary>Open a new connection to pCloud</summary>
 		/// <param name="encryptTraffic">True to use SSL for the connection.</param>
 		/// <param name="authenticationToken">If you have an auth. token, you can make new connection already authenticated.</param>
-		public static async Task<Connection> open( bool encryptTraffic, string authenticationToken = null )
+		public static async Task<Connection> open( bool encryptTraffic, string host = Endpoint.host, string authenticationToken = null )
 		{
-			Stream stream = await Endpoint.connect( encryptTraffic );
-			return new Connection( stream, encryptTraffic ) { authToken = authenticationToken };
+			Stream stream = await Endpoint.connect( encryptTraffic, host );
+			return new Connection( stream, Endpoint.host, encryptTraffic ) { authToken = authenticationToken };
+		}
+
+		/// <summary>Open a connection to the geographically closest pCloud server.</summary>
+		/// <remarks>
+		/// <para>Doesn't work in practice. I'm getting binapiams2.pcloud.com for the nearest binary API server, however TCP ports 8398 and 8399 are both closed.</para>
+		/// <para>The observed behavior it documented:
+		/// <i>If request to API server different from api.pcloud.com fails (network error) the client should fall back to using api.pcloud.com.</i></para>
+		/// </remarks>
+		public static async Task<Connection> openNearest( bool encryptTraffic )
+		{
+			Connection defaultConnection = await open( encryptTraffic );
+			string[] nearestServers = null;
+			try
+			{
+				nearestServers = await defaultConnection.getNearestServer();
+			}
+			catch( Exception )
+			{
+				return defaultConnection;
+			}
+
+			foreach( string host in nearestServers.enumerate() )
+			{
+				try
+				{
+					Stream stream = await Endpoint.connect( encryptTraffic, host );
+					// Connected to a nearest server. Close the default connection, and return the new one instead.
+					defaultConnection.Dispose();
+					return new Connection( stream, host, encryptTraffic );
+				}
+				catch( Exception ) { }
+			}
+			return defaultConnection;
 		}
 
 		// Error handling

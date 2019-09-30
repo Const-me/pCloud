@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PCloud
@@ -30,6 +31,17 @@ namespace PCloud
 			var req = new RequestBuilder( "getip" );
 			var resp = await conn.send( req );
 			return new ClientIP( resp.dict );
+		}
+
+		/// <summary>Get closest API servers to the requesting client.</summary>
+		public static async Task<string[]> getNearestServer( this Connection conn )
+		{
+			var req = new RequestBuilder( "getapiserver" );
+			var resp = await conn.send( req );
+			object[] binapi = resp.dict.lookup( "binapi" ) as object[];
+			if( null == binapi )
+				return null;
+			return binapi.Cast<string>().ToArray();
 		}
 	}
 }
