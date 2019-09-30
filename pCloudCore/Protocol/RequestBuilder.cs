@@ -22,27 +22,29 @@ namespace PCloud
 			// Validate a few things
 			if( string.IsNullOrWhiteSpace( method ) )
 				throw new ArgumentException( "Method can't be empty" );
-			byte[] methodBytes = encNames.GetBytes( method );
-			if( methodBytes.Length >= 0x80 )
+			int methodBytesCount = encNames.GetByteCount( method );
+			if( methodBytesCount >= 0x80 )
 				throw new ArgumentOutOfRangeException( "Method is too long, 127 bytes max" );
 			if( payloadLength.HasValue && payloadLength.Value < 0 )
 				throw new ArgumentException( "Payload length can't be negative" );
 
 			buffer = new MemoryStream( initialBufferCapacity );
 			// First 2 bytes are for the length. Constructor leaves them 0.
-			byte[] header = new byte[ 3 ];
+			byte[] header = Utils.bufferRent( 3 );
 			// The first byte of the request gives the length of the name of the method - method_len( bits 0 - 6 ) and indicates if the request has data( bit 7 ).
-			header[ 2 ] = (byte)methodBytes.Length;
+			header[ 2 ] = (byte)methodBytesCount;
 			if( payloadLength.HasValue )
 				header[ 2 ] |= 0x80;
-			buffer.write( header );
+			// The first 2 bytes are garbage, ArrayPool doesn't zero initialize, but that's OK, close() method overwrites then anyway.
+			buffer.write( header, 3 );
+			Utils.bufferReturn( header );
 
 			// If the highest bit(7) is set, than the following 8 bytes represent 64 bit number, that is the length of the data that comes immediately after the request.
 			if( payloadLength.HasValue )
 				buffer.write( BitConverter.GetBytes( payloadLength.Value ) );
 
 			// The next method_len bytes are the name of the method to be called.
-			buffer.write( methodBytes );
+			buffer.write( method, methodBytesCount, encNames );
 
 			// The following one byte represent 8 bit number containing the number of parameters passed.
 			parametersCountOffset = buffer.Length;
@@ -63,14 +65,15 @@ namespace PCloud
 
 			if( null == name )
 				throw new ArgumentNullException( "name" );
-			byte[] nameBytes = encNames.GetBytes( name );
-			if( nameBytes.Length >= 0x40 )
+
+			int nameBytesCount = encNames.GetByteCount( name );
+			if( nameBytesCount >= 0x40 )
 				throw new ArgumentException( $"Parameter name is too long, they're limited to 63 bytes" );
 			// For each parameter, the first byte represent the parameter type index in two highest bits ( 6 - 7 ) and the length of the parameter name ( param_name_len ) in the low 6 bits( 0 - 5 )
 			byte firstByte = (byte)tp;
-			firstByte |= (byte)nameBytes.Length;
+			firstByte |= (byte)nameBytesCount;
 			buffer.WriteByte( firstByte );
-			buffer.write( nameBytes );
+			buffer.write( name, nameBytesCount, encNames );
 			parametersCount++;
 		}
 
@@ -79,6 +82,15 @@ namespace PCloud
 		{
 			writeName( name, eParamType.String );
 			// string, 4 byte length and string contents follow
+			int valueBytesCount = encValues.GetByteCount( value );
+			buffer.write( BitConverter.GetBytes( valueBytesCount ) );
+			buffer.write( value, valueBytesCount, encValues );
+		}
+
+		/// <summary>Append a string parameter, avoiding to use shared buffer for the value.</summary>
+		public void addSecret( string name, string value )
+		{
+			writeName( name, eParamType.String );
 			byte[] valueBytes = encValues.GetBytes( value );
 			buffer.write( BitConverter.GetBytes( valueBytes.Length ) );
 			buffer.write( valueBytes );

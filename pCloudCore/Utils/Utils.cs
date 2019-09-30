@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -13,6 +14,36 @@ namespace PCloud
 		public static void write( this Stream stm, byte[] buffer )
 		{
 			stm.Write( buffer, 0, buffer.Length );
+		}
+
+		public static void write( this Stream stm, byte[] buffer, int length )
+		{
+			stm.Write( buffer, 0, length );
+		}
+
+		/// <summary>Retrieves a buffer that is at least the requested length.</summary>
+		public static byte[] bufferRent( int cb )
+		{
+			return ArrayPool<byte>.Shared.Rent( cb );
+		}
+
+		/// <summary>Returns an array to the pool that was previously obtained from <see cref="bufferRent" />.</summary>
+		public static void bufferReturn( byte[] buffer )
+		{
+			ArrayPool<byte>.Shared.Return( buffer );
+		}
+
+		/// <summary>Write string to stream with specified encoding, using ArrayPool to save RAM allocations.</summary>
+		public static void write( this Stream stm, string str, int bytesCount, Encoding enc )
+		{
+#if DEBUG
+			Debug.Assert( bytesCount == enc.GetByteCount( str ) );
+#endif
+			byte[] buffer = bufferRent( bytesCount );
+			int cb = enc.GetBytes( str, 0, str.Length, buffer, 0 );
+			Debug.Assert( cb == bytesCount );
+			stm.write( buffer, bytesCount );
+			bufferReturn( buffer );
 		}
 
 		public static void rewind( this Stream stm )
@@ -48,6 +79,7 @@ namespace PCloud
 		{
 			using( SHA1Managed sha1 = new SHA1Managed() )
 			{
+				// Not using ArrayPool here, login is not performance critical but it is security critical.
 				var hash = sha1.ComputeHash( Encoding.UTF8.GetBytes( input ) );
 				var sb = new StringBuilder( hash.Length * 2 );
 				foreach( byte b in hash )
@@ -61,7 +93,7 @@ namespace PCloud
 		{
 			if( length < bufferSize )
 				bufferSize = (int)length;
-			byte[] buffer = ArrayPool<byte>.Shared.Rent( bufferSize );
+			byte[] buffer = bufferRent( bufferSize );
 			try
 			{
 				while( length > 0 )
@@ -80,7 +112,7 @@ namespace PCloud
 			}
 			finally
 			{
-				ArrayPool<byte>.Shared.Return( buffer );
+				bufferReturn( buffer );
 			}
 		}
 
@@ -103,7 +135,7 @@ namespace PCloud
 		public static async Task fastForward( this Stream from, long length )
 		{
 			int bufferSize = 256 * 1024;
-			byte[] buffer = ArrayPool<byte>.Shared.Rent( bufferSize );
+			byte[] buffer = bufferRent( bufferSize );
 			try
 			{
 				while( length > 0 )
@@ -119,7 +151,7 @@ namespace PCloud
 			}
 			finally
 			{
-				ArrayPool<byte>.Shared.Return( buffer );
+				bufferReturn( buffer );
 			}
 		}
 	}

@@ -63,8 +63,8 @@ namespace PCloud
 				throw new NotSupportedException( "For security reasons, you must use encrypted connection to change a password." );
 
 			var req = conn.newRequest( "changepassword" );
-			req.add( "oldpassword", oldPassword );
-			req.add( "newpassword", newPassword );
+			req.addSecret( "oldpassword", oldPassword );
+			req.addSecret( "newpassword", newPassword );
 			return conn.send( req );
 		}
 	}
