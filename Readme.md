@@ -1,1 +1,1 @@
-This project is not actively maintained.The repository contains unofficial .NET implementation of the pCloud storage, https://pcloud.com/
+This project is not actively maintained.This repository contains unofficial .NET implementation of the [pCloud](https://pcloud.com/) SDK.I've used API documentation from there: https://docs.pcloud.com/The binaries [are on NuGet](https://www.nuget.org/packages/pCloud/).
