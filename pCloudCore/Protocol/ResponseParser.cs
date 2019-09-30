@@ -9,7 +9,7 @@ namespace PCloud
 	/// <remarks>All integers are unsigned, i.e. you'll get byte, ushort, uint, or ulong for integer values.</remarks>
 	class ResponseParser
 	{
-		static readonly Encoding encStrings = new UTF8Encoding( false, true );
+		static readonly Encoding encStrings = Encoding.UTF8;
 
 		readonly List<string> strings = new List<string>();
 		readonly byte[] buffer;

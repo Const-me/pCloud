@@ -7,9 +7,11 @@ namespace PCloud
 	/// <summary>Prepare binary requests in MemoryStream buffer.</summary>
 	class RequestBuilder
 	{
+		const int initialBufferCapacity = 128;
+
 		readonly MemoryStream buffer;
 		static readonly Encoding encNames = Encoding.ASCII;
-		static readonly Encoding encValues = new UTF8Encoding( false, true );
+		static readonly Encoding encValues = Encoding.UTF8;
 		bool isClosed = false;
 		readonly long parametersCountOffset;
 		int parametersCount = 0;
@@ -26,11 +28,7 @@ namespace PCloud
 			if( payloadLength.HasValue && payloadLength.Value < 0 )
 				throw new ArgumentException( "Payload length can't be negative" );
 
-			int initialLength = 2 + 1 + methodBytes.Length + 1;
-			if( payloadLength.HasValue )
-				initialLength += 8;
-
-			buffer = new MemoryStream( initialLength );
+			buffer = new MemoryStream( initialBufferCapacity );
 			// First 2 bytes are for the length. Constructor leaves them 0.
 			byte[] header = new byte[ 3 ];
 			// The first byte of the request gives the length of the name of the method - method_len( bits 0 - 6 ) and indicates if the request has data( bit 7 ).
