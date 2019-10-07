@@ -33,35 +33,35 @@ namespace PCloud
 		/// It's caller's responsibility to iterate through <see cref="payload" /> values and read all the data before reusing the connection for other requests.</remarks>
 		public static async Task<Response> receive( Stream connection )
 		{
-			// Receive into array of bytes
-			int length = BitConverter.ToInt32( await connection.read( 4 ), 0 );
-			byte[] buffer = await connection.read( length );
-
-			// Parse
-			Hash dict = null;
-			List<object> otherValues = null;
-			var parser = new ResponseParser( buffer );
-
-			foreach( object obj in parser.parse() )
+			// Receive into a buffer
+			using( var buffer = await ResponseBuffer.receive( connection ) )
 			{
-				switch( obj )
-				{
-					case Hash h:
-						if( null == dict )
-						{
-							dict = h;
-							break;
-						}
-						goto default;
-					default:
-						if( null == otherValues )
-							otherValues = new List<object>();
-						otherValues.Add( obj );
-						break;
-				}
-			}
+				// Parse binary JSON from that buffer
+				Hash dict = null;
+				List<object> otherValues = null;
+				var parser = new ResponseParser( buffer );
 
-			return new Response( dict, parser.payloads, otherValues );
+				foreach( object obj in parser.parse() )
+				{
+					switch( obj )
+					{
+						case Hash h:
+							if( null == dict )
+							{
+								dict = h;
+								break;
+							}
+							goto default;
+						default:
+							if( null == otherValues )
+								otherValues = new List<object>();
+							otherValues.Add( obj );
+							break;
+					}
+				}
+				// Return a new response object
+				return new Response( dict, parser.payloads, otherValues );
+			}
 		}
 
 		Response( Hash dict, List<Data> payload, List<object> otherValues )

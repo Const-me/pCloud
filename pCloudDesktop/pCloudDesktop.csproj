@@ -93,6 +93,9 @@
     <Compile Include="..\pCloudCore\Protocol\Response.cs">
       <Link>Protocol\Response.cs</Link>
     </Compile>
+    <Compile Include="..\pCloudCore\Protocol\ResponseBuffer.cs">
+      <Link>Protocol\ResponseBuffer.cs</Link>
+    </Compile>
     <Compile Include="..\pCloudCore\Protocol\ResponseParser.cs">
       <Link>Protocol\ResponseParser.cs</Link>
     </Compile>

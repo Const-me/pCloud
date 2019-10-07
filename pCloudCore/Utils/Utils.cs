@@ -58,19 +58,18 @@ namespace PCloud
 			return v;
 		}
 
-		public static async Task<byte[]> read( this Stream stm, int length )
+		public static async Task read( this Stream stm, byte[] buffer, int length )
 		{
-			byte[] buffer = new byte[ length ];
 			int offset = 0;
 			while( true )
 			{
 				int cb = await stm.ReadAsync( buffer, offset, length );
 				if( 0 == cb )
 					throw new EndOfStreamException();
-				offset += cb;
 				length -= cb;
 				if( length <= 0 )
-					return buffer;
+					return;
+				offset += cb;
 			}
 		}
 
@@ -190,6 +189,14 @@ namespace PCloud
 			{
 				bufferReturn( buffer );
 			}
+		}
+
+		/// <summary>A string like "1 byte" or "12 bytes"</summary>
+		public static string pluralString( this int i, string single )
+		{
+			if( 1 != i )
+				return $"{ i } { single }s";
+			return $"1 { single }";
 		}
 	}
 }
