@@ -15,6 +15,7 @@
 		</description>
 		<copyright>Copyright © const.me, 2019</copyright>
 		<title>Unofficial SDK for https://pcloud.com/ cloud storage</title>
+		<releaseNotes>Slightly improved memory management.</releaseNotes>
 		<projectUrl>https://github.com/Const-me/pCloud</projectUrl>
 		<repository type="git" url="https://github.com/Const-me/pCloud.git" />
 		<license type="expression">MIT</license>
