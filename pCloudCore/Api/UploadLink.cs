@@ -10,7 +10,7 @@ namespace PCloud
 		/// <summary>Anonymously upload file to an upload link.</summary>
 		/// <remarks>
 		/// <para>Works without authentication, you need upload link code to use this API.</para>
-		/// <para>The API documentation is silent about that, but "names" request parameter appears to be mandatory for this RPC.</para>
+		/// <para>The API documentation is silent about that, but "from" request parameter appears to be mandatory for this RPC.</para>
 		/// </remarks>
 		public static Task uploadToLink( this Connection conn, string fileName, Stream payload, string uploadLinkCode, string from, bool nopartial = true )
 		{
