@@ -6,13 +6,7 @@
 		<authors>const.me</authors>
 		<owners>const.me</owners>
 		<summary>Unofficial SDK for https://pcloud.com/ cloud storage</summary>
-		<description>
-			A straightforward implementation of the API documented at https://docs.pcloud.com/ The library consumes binary protocol, because I don’t like neither JSON nor HTTP too much. SSL traffic encryption is supported.
-			I’ve only tested with free accounts.
-			The APIs uses async-await a lot. You can send multiple requests over the same connection, they will be pipelined i.e. the client will send several requests, then start waiting for their responses. The maximum in-flight requests count is limited to 8. The public API is thread safe.
-			You may want to change Authentication.deviceInfoString public field to the name of your app. The default value is derived from [AssemblyProduct] and version attributes of your application.
-			The library doesn’t support 100% of the API, only a subset of it: login/logout, directory operations like create/rename/move/list, file operations like create/read/write/delete, upload links, and a few more requests. Feel free to fork and implement whatever extra you need.
-		</description>
+		<description>A straightforward implementation of the binary protocol documented at https://docs.pcloud.com/</description>
 		<copyright>Copyright © const.me, 2019-2026</copyright>
 		<title>Unofficial SDK for https://pcloud.com/ cloud storage</title>
 		<releaseNotes>Upgraded to modern .NET runtime</releaseNotes>
@@ -27,6 +21,7 @@
 			</group>
 		</dependencies>
 		<tags>cloud</tags>
+		<readme>docs\readme.md</readme>
 	</metadata>
 	<files>
 		<!-- .NET 10 -->
@@ -39,5 +34,6 @@
 		<file src="..\pCloudDesktop\bin\Release\pCloud.pdb" target="lib\net48" />
 		<file src="..\pCloudDesktop\bin\Release\pCloud.xml" target="lib\net48" />
 
+		<file src="readme.md" target="docs\" />
 	</files>
 </package>
