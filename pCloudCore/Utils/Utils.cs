@@ -103,12 +103,15 @@ namespace PCloud
 		/// <summary>Compute SHA1 of UTF8 bytes of the input string, convert result to lowercase hexadecimal string without delimiters between bytes</summary>
 		public static string sha1( string input )
 		{
+			// Not using ArrayPool here, login is not performance critical
+			byte[] bytes = Encoding.UTF8.GetBytes( input );
+#if NETCOREAPP
+			bytes = SHA1.HashData( bytes );
+#else
 			using( SHA1Managed sha1 = new SHA1Managed() )
-			{
-				// Not using ArrayPool here, login is not performance critical but it is security critical.
-				var hash = sha1.ComputeHash( Encoding.UTF8.GetBytes( input ) );
-				return hexString( hash );
-			}
+				bytes = sha1.ComputeHash( bytes );
+#endif
+			return hexString( bytes );
 		}
 
 		static readonly int[] hexValueLookup = new int[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
