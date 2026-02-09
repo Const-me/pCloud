@@ -6,3 +6,4 @@ pCloudDesktop/bin/
 pCloudDesktop/obj/
 TestCore/bin/
 TestCore/obj/
+*.user
