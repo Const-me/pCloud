@@ -21,26 +21,23 @@
 		<license type="expression">MIT</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<dependencies>
-			<group targetFramework=".NETCoreApp2.2" />
-			<group targetFramework="net47">
-				<dependency id="System.Buffers" version="4.5.0" />
+			<group targetFramework="net10.0" />
+			<group targetFramework="net48">
+				<dependency id="System.Buffers" version="4.6.1" />
 			</group>
 		</dependencies>
-		<references>
-			<reference file="pCloud.dll" />
-		</references>
 		<tags>cloud</tags>
 	</metadata>
 	<files>
-		<!-- .NET Core 2.2 -->
-		<file src="bin\Release\netcoreapp2.2\pCloud.dll" target="lib\netcoreapp2.2" />
-		<file src="bin\Release\netcoreapp2.2\pCloud.pdb" target="lib\netcoreapp2.2" />
-		<file src="bin\Release\netcoreapp2.2\pCloud.xml" target="lib\netcoreapp2.2" />
+		<!-- .NET 10 -->
+		<file src="bin\Release\pCloud.dll" target="lib\net10.0" />
+		<file src="bin\Release\pCloud.pdb" target="lib\net10.0" />
+		<file src="bin\Release\pCloud.xml" target="lib\net10.0" />
 
-		<!-- .NET Framework 4.7.0 -->
-		<file src="..\pCloudDesktop\bin\Release\pCloud.dll" target="lib\net47" />
-		<file src="..\pCloudDesktop\bin\Release\pCloud.pdb" target="lib\net47" />
-		<file src="..\pCloudDesktop\bin\Release\pCloud.xml" target="lib\net47" />
+		<!-- .NET 4.8 -->
+		<file src="..\pCloudDesktop\bin\Release\pCloud.dll" target="lib\net48" />
+		<file src="..\pCloudDesktop\bin\Release\pCloud.pdb" target="lib\net48" />
+		<file src="..\pCloudDesktop\bin\Release\pCloud.xml" target="lib\net48" />
 
 	</files>
 </package>

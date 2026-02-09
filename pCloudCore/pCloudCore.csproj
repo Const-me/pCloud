@@ -1,12 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>netcoreapp2.2</TargetFramework>
+		<TargetFramework>net10.0</TargetFramework>
 		<AssemblyName>pCloud</AssemblyName>
 		<RootNamespace>PCloud</RootNamespace>
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 		<PackageId>pCloud</PackageId>
 		<NuspecFile>pCloud.nuspec</NuspecFile>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
