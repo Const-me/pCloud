@@ -7,9 +7,13 @@ using System.Threading.Tasks;
 namespace PCloud
 {
 	/// <summary>Connect to the server, optionally setting up SSL traffic encryption</summary>
-	static class Endpoint
+	public static class Endpoint
 	{
+		/// <summary>API endpoint of the American data centre</summary>
 		public const string host = "api.pcloud.com";
+		/// <summary>API endpoint of the European data centre</summary>
+		public const string hostEurope = "eapi.pcloud.com";
+
 		const int port = 8398;
 		const int portSsl = 8399;
 
@@ -34,7 +38,7 @@ namespace PCloud
 			SslStream sslStream = new SslStream( tcp, false );
 			try
 			{
-				await sslStream.AuthenticateAsClientAsync( host );
+				await sslStream.AuthenticateAsClientAsync( hostDnsName );
 				return sslStream;
 			}
 			catch( Exception )
@@ -45,7 +49,7 @@ namespace PCloud
 		}
 
 		/// <summary>Establish connection to a pCloud server.</summary>
-		public static Task<Stream> connect( bool encryptTraffic, string hostDnsName = host )
+		internal static Task<Stream> connect( bool encryptTraffic, string hostDnsName = host )
 		{
 			return encryptTraffic ? connectSsl( hostDnsName ) : connectTcp( hostDnsName, port );
 		}
