@@ -82,7 +82,10 @@ namespace PCloud
 			for( int i = 0; i < 256; i++ )
 			{
 				string s = i.ToString( "x2" );
-				result[ i ] = ( (uint)s[ 0 ] ) | ( (uint)s[ 1 ] << 16 );
+				uint e = s[ 1 ];
+				e <<= 16;
+				e |= s[ 0 ];
+				result[ i ] = e;
 			}
 			return result;
 		}
@@ -94,7 +97,7 @@ namespace PCloud
 			for( int i = 0; i < bytes.Length; i++ )
 			{
 				uint val = lookup32[ bytes[ i ] ];
-				result[ 2 * i ] = (char)val;
+				result[ 2 * i ] = unchecked((char)val);
 				result[ 2 * i + 1 ] = (char)( val >> 16 );
 			}
 			return new string( result );
