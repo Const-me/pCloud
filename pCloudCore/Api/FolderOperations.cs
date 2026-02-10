@@ -10,10 +10,20 @@ namespace PCloud
 		/// <param name="name">Name of the new folder</param>
 		/// <param name="parent">Parent folder, or null to create a top-level one</param>
 		/// <param name="getExisting">true to get an existing one if it exists, false to fail</param>
-		public static async Task<Metadata.FolderInfo> createFolder( this Connection conn, string name, Metadata.FolderInfo parent = null, bool getExisting = true )
+		public static Task<Metadata.FolderInfo> createFolder( this Connection conn, string name, Metadata.FolderInfo parent = null, bool getExisting = true )
+		{
+			long id = parent?.id ?? 0L;
+			return createFolder( conn, name, id, getExisting );
+		}
+
+		/// <summary>Create a folder</summary>
+		/// <param name="name">Name of the new folder</param>
+		/// <param name="parent">Parent folder ID</param>
+		/// <param name="getExisting">true to get an existing one if it exists, false to fail</param>
+		public static async Task<Metadata.FolderInfo> createFolder( this Connection conn, string name, long parent, bool getExisting = true )
 		{
 			RequestBuilder req = conn.newRequest( getExisting ? "createfolderifnotexists" : "createfolder" );
-			req.add( "folderid", parent?.id ?? 0L );
+			req.add( "folderid", parent );
 			req.add( "name", name );
 			req.unixTimestamps();
 
@@ -24,12 +34,18 @@ namespace PCloud
 		/// <summary>Delete a folder</summary>
 		public static Task deleteFolder( this Connection conn, Metadata.FolderInfo folder, bool recursively = false )
 		{
-			if( null == folder || 0 == folder.id )
+			long id = folder?.id ?? 0;
+			return deleteFolder( conn, id, recursively );
+		}
+
+		/// <summary>Delete a folder</summary>
+		public static Task deleteFolder( this Connection conn, long folder, bool recursively = false )
+		{
+			if( 0 == folder )
 				throw new ArgumentException( "The root folder can't be deleted" );
 			RequestBuilder req = conn.newRequest( recursively ? "deletefolderrecursive" : "deletefolder" );
-			req.add( "folderid", folder.id );
+			req.add( "folderid", folder );
 			req.unixTimestamps();
-
 			return conn.send( req );
 		}
 

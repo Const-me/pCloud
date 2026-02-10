@@ -365,5 +365,16 @@ namespace PCloud
 			var response = await conn.send( req );
 			return new Metadata.FileInfo( response.metadata() );
 		}
+
+		/// <summary>Move file into another remote folder</summary>
+		public static async Task<Metadata.FileInfo> moveFile( this Connection conn, Metadata.FileInfo file, long where )
+		{
+			RequestBuilder req = conn.newRequest( "renamefile" );
+			req.add( "fileid", file.id );
+			req.add( "tofolderid", where );
+			req.unixTimestamps();
+			var response = await conn.send( req );
+			return new Metadata.FileInfo( response.metadata() );
+		}
 	}
 }
