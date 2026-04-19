@@ -35,25 +35,23 @@ namespace PCloud
 
 			string digest = await conn.getDigest();
 			string passwordDigest = Utils.sha1( password + Utils.sha1( email.ToLowerInvariant() ) + digest );
-			var req = new RequestBuilder( "userinfo" );
+			RequestBuilder req = new RequestBuilder( "userinfo" );
 			req.add( "getauth", true );
 			req.add( "username", email );
 			req.add( "digest", digest );
 			req.add( "passworddigest", passwordDigest );
 			// Set device global parameter
 			req.add( "device", deviceInfoString );
-			var response = await conn.send( req );
-			conn.authToken = (string)response.dict[ "auth" ];
+			Response response = await conn.send( req );
+			conn.onLogin( response );
 		}
 
 		/// <summary>Logout</summary>
 		public static async Task logout( this Connection conn )
 		{
-			var req = conn.newRequest( "logout" );
-			var response = await conn.send( req );
-			if( !(bool)response[ "auth_deleted" ] )
-				throw new ApplicationException( "Unable to logout" );
-			conn.authToken = null;
+			RequestBuilder req = conn.newRequest( "logout" );
+			Response response = await conn.send( req );
+			conn.onLogout( response );
 		}
 
 		/// <summary>Change current user's password; requires SSL encrypted server connection.</summary>

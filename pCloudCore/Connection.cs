@@ -1,4 +1,6 @@
-﻿using System;
+﻿// The following macro fixes dreaking API on pcloud.com side, found on 2026-04-18
+#define NO_AUTH_TOKENS
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -52,7 +54,13 @@ namespace PCloud
 		public static async Task<Connection> open( bool encryptTraffic, string host = Endpoint.host, string authenticationToken = null )
 		{
 			Stream stream = await Endpoint.connect( encryptTraffic, host );
+#if NO_AUTH_TOKENS
+			if( null != authenticationToken )
+				throw new ArgumentException( "Seems pcloud.com deprecated auth tokens for TCP sessions" );
+			return new Connection( stream, Endpoint.host, encryptTraffic );
+#else
 			return new Connection( stream, Endpoint.host, encryptTraffic ) { authToken = authenticationToken };
+#endif
 		}
 
 		/// <summary>Open a connection to the geographically closest pCloud server.</summary>
@@ -264,21 +272,46 @@ namespace PCloud
 			}
 			return await tResult;
 		}
-
+#if NO_AUTH_TOKENS
+		/// <summary>True if this connection is authenticated</summary>
+		public bool isAuthenticated { get; private set; }
+#else
 		/// <summary>If this connection is authenticated, returns the token. You can use the token to open another connection which is already authenticated, without calling login.</summary>
-		public string authToken { get; internal set; } = null;
-
+		public string authToken { get; private set; } = null;
 		/// <summary>True if this connection is authenticated</summary>
 		public bool isAuthenticated => !string.IsNullOrEmpty( authToken );
+#endif
 
 		/// <summary>Create a request builder; if authenticated, set `auth` property.</summary>
 		internal RequestBuilder newRequest( string method, long? payloadLength = null )
 		{
 			var req = new RequestBuilder( method, payloadLength );
+#if !NO_AUTH_TOKENS
 			string at = authToken;
 			if( !string.IsNullOrEmpty( at ) )
 				req.add( "auth", at );
+#endif
 			return req;
+		}
+
+		internal void onLogin( Response response )
+		{
+#if NO_AUTH_TOKENS
+			isAuthenticated = true;
+#else
+			authToken = (string)response.dict[ "auth" ];
+#endif
+		}
+
+		internal void onLogout( Response response )
+		{
+#if NO_AUTH_TOKENS
+			isAuthenticated = false;
+#else
+			if( !(bool)response[ "auth_deleted" ] )
+				throw new ApplicationException( "Unable to logout" );
+			authToken = null;
+#endif
 		}
 	}
 }
