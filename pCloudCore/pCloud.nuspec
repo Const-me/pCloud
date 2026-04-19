@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata minClientVersion="3.4.4">
 		<id>pCloud</id>
-		<version>1.2.0</version>
+		<version>1.3.0</version>
 		<authors>const.me</authors>
 		<owners>const.me</owners>
 		<summary>Unofficial SDK for https://pcloud.com/ cloud storage</summary>
@@ -10,8 +10,8 @@
 		<copyright>Copyright © const.me, 2019-2026</copyright>
 		<title>Unofficial SDK for https://pcloud.com/ cloud storage</title>
 		<releaseNotes>
-			Fixed arithmetic overflow exception on login.
-			Added couple missing remote file operations
+			Updated after pcloud.com API change that broke login and logout methods of this library.
+			Seems pcloud.com no longer using auth tokens for TCP connections. Not wrong because unlike HTTP, the connections are stateful. However, at the time of this release the official API documentation has not yet been updated to reflect this change.
 		</releaseNotes>
 		<projectUrl>https://github.com/Const-me/pCloud</projectUrl>
 		<repository type="git" url="https://github.com/Const-me/pCloud.git" />
